@@ -38,7 +38,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
     }
     setState(() {});
     var defaultCipherPair = await CipherPairAPI().defaultCipherPair();
-    if (mounted && defaultCipherPair.data != null) {
+    if (mounted &&
+        CipherPairAPI().hasDefaultCipherPair &&
+        defaultCipherPair.data != null) {
       context.go('/home');
     }
   }
