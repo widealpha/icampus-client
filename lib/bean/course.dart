@@ -18,6 +18,7 @@ class Course {
 
   ///上课地点
   String courseLocation;
+  List<int> courseOrders = [];
 
   ///上课节次[1-5]
   int courseOrder;
@@ -63,25 +64,29 @@ class Course {
     return Course.fromJson({});
   }
 
-  Course(
-      {required this.id,
-        required this.courseId,
-        required this.courseName,
-        required this.courseLocation,
-        required this.courseOrder,
-        required this.courseWeekday,
-        required this.courseTeacher,
-        required this.userCourse,
-        required this.startTime,
-        required this.endTime,
-        required this.courseWeeks,
-        required this.courseIndex,
-        required this.academy,
-        required this.credit,
-        required this.remaining,
-        required this.category,
-        required this.courseInfo,
-        required this.examType});
+  Course({
+    required this.id,
+    required this.courseId,
+    required this.courseName,
+    required this.courseLocation,
+    required this.courseOrder,
+    required this.courseWeekday,
+    required this.courseTeacher,
+    required this.userCourse,
+    required this.startTime,
+    required this.endTime,
+    required this.courseWeeks,
+    required this.courseIndex,
+    required this.academy,
+    required this.credit,
+    required this.remaining,
+    required this.category,
+    required this.courseInfo,
+    required this.examType,
+    this.courseOrders = const [],
+  });
+
+
 
   factory Course.fromJson(Map<String, dynamic> jsonMap) {
     //每次给count随机增加一个数,实现hashcode的变化
@@ -91,18 +96,22 @@ class Course {
       courseId: jsonMap["courseId"] ?? '$count',
       courseName: jsonMap["courseName"] ?? '',
       courseLocation: jsonMap["courseLocation"] ?? '',
-      courseOrder: jsonMap["courseOrder"] ?? 0,
+      courseOrders: (jsonMap["courseOrder"] is List)
+          ? jsonMap["courseOrder"].cast<int>()
+          : [],
+      courseOrder:
+          (jsonMap["courseOrder"] is List) ? 1 : jsonMap["courseOrder"],
       courseWeekday: jsonMap["courseWeekday"] ?? 0,
       courseTeacher: jsonMap["courseTeacher"] ?? '',
       userCourse: jsonMap['userCourse'] ?? false,
       startTime: jsonMap['startTime'] ?? '00:00',
       endTime: jsonMap["endTime"] ?? '00:00',
       courseWeeks:
-      (json.decode(jsonMap['courseWeeks'] ?? '[]') as List).cast<int>()
-        ..sort(),
+          (jsonMap['courseWeeks'] as List).cast<int>()
+            ..sort(),
       courseIndex: jsonMap["courseIndex"] ?? 0,
       academy: jsonMap["courseAcademy"] ?? '',
-      credit: jsonMap["credit"]?.toDouble() ?? 0.0,
+      credit: double.tryParse('${jsonMap["credit"]}') ?? 0.0,
       remaining: jsonMap["remaining"] ?? 0,
       category: jsonMap["category"] ?? '',
       courseInfo: jsonMap["courseInfo"] ?? '',
@@ -142,4 +151,45 @@ class Course {
     };
   }
 
+  Course copyWith({
+    int? id,
+    String? courseId,
+    String? courseName,
+    String? courseLocation,
+    int? courseOrder,
+    int? courseWeekday,
+    String? courseTeacher,
+    bool? userCourse,
+    String? startTime,
+    String? endTime,
+    List<int>? courseWeeks,
+    int? courseIndex,
+    String? academy,
+    int? remaining,
+    String? category,
+    String? courseInfo,
+    double? credit,
+    String? examType,
+  }) {
+    return Course(
+      id: id ?? this.id,
+      courseId: courseId ?? this.courseId,
+      courseName: courseName ?? this.courseName,
+      courseLocation: courseLocation ?? this.courseLocation,
+      courseOrder: courseOrder ?? this.courseOrder,
+      courseWeekday: courseWeekday ?? this.courseWeekday,
+      courseTeacher: courseTeacher ?? this.courseTeacher,
+      userCourse: userCourse ?? this.userCourse,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      courseWeeks: courseWeeks ?? List.of(this.courseWeeks),
+      courseIndex: courseIndex ?? this.courseIndex,
+      academy: academy ?? this.academy,
+      remaining: remaining ?? this.remaining,
+      category: category ?? this.category,
+      courseInfo: courseInfo ?? this.courseInfo,
+      credit: credit ?? this.credit,
+      examType: examType ?? this.examType,
+    );
+  }
 }

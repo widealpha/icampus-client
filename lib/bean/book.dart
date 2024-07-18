@@ -75,21 +75,6 @@ class Book {
     );
   }
 
-  factory Book.fromSearchBook(SearchBook searchBook) {
-    return Book(
-        bookId: searchBook.bookId,
-        title: searchBook.title,
-        author: searchBook.author,
-        collectionCount: 0,
-        freeCount: 0,
-        publisher: searchBook.publisher,
-        publishYear: searchBook.publishYear,
-        theme: '',
-        isbn: '',
-        digest: '',
-        collections: []);
-  }
-
   factory Book.fromJson(Map jsonMap) {
     List list = jsonMap['collectionBooks'] ?? [];
     return Book(
@@ -141,50 +126,5 @@ class BookCollection {
       location: jsonMap['location'] ?? '',
       status: jsonMap['status'] ?? '不可借阅',
     );
-  }
-}
-
-///搜索结果图书
-class SearchBook {
-  ///书籍id
-  final String bookId;
-
-  ///书籍名称
-  final String title;
-
-  ///书籍作者
-  final String author;
-
-  ///出版社
-  final String publisher;
-
-  ///出版年份
-  final String publishYear;
-
-  SearchBook({
-    required this.bookId,
-    required this.title,
-    required this.author,
-    required this.publisher,
-    required this.publishYear,
-  });
-
-  factory SearchBook.fromJson(Map<String, dynamic> json) {
-    return SearchBook(
-      bookId: json["bookId"] ?? '',
-      title: json["title"] ?? '',
-      author: json["author"] ?? '',
-      publisher: json["publisher"] ?? '',
-      publishYear: json["publishYear"] ?? '',
-    );
-  }
-
-  factory SearchBook.fromBook(Book book) {
-    return SearchBook(
-        author: book.author,
-        bookId: book.bookId,
-        title: book.title,
-        publishYear: book.publishYear,
-        publisher: book.publisher);
   }
 }

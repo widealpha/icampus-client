@@ -31,13 +31,13 @@ class Exam {
 
   factory Exam.fromJson(Map<String, dynamic> map) {
     return Exam(
-      courseId: map['courseId'] as String,
-      courseName: map['courseName'] as String,
-      campus: map['campus'] as String,
-      method: map['method'] as String,
-      location: map['location'] as String,
-      time: map['time'] as String,
-      seat: map['seat'] as String,
+      courseId: map['courseId'] ?? '',
+      courseName: map['courseName'] ?? '',
+      campus: map['campus'] ?? '',
+      method: map['method'] ?? '',
+      location: map['location'] ?? '',
+      time: map['time'] ?? '',
+      seat: map['seat'] ?? '',
     );
   }
 }

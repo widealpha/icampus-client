@@ -77,9 +77,9 @@ class PluginAPI {
   }
 
   static Future<ResultEntity<Plugin>> getByTitle(String title) async {
-    return ResultEntity.succeed(
-        data: Plugin.fromJson(
-            const {'title': '中国科学院大学', 'content': 'https://widealpha.top/rfw/ucas.js'}));
+    // return ResultEntity.succeed(
+    //     data: Plugin.fromJson(
+    //         const {'title': '中国科学院大学', 'content': 'https://widealpha.top/rfw/ucas.js'}));
     var response = await HttpUtils.get('/extension/get-by-title',
         params: {'title': title},
         options: Options(headers: {'Authorization': Store.get('token')}));

@@ -29,20 +29,20 @@ class _ExamPageState extends State<ExamPage> {
       _exams.clear();
       List<Exam> data = res.data!;
       _exams.addAll(data);
-      _exams.sort((a, b) {
-        DateTime now = DateTime.now();
-        DateTime aStartTime = DateTime.parse(a.time.split('~')[0].trim());
-        DateTime bStartTime = DateTime.parse(b.time.split('~')[0].trim());
-        if (aStartTime.isAfter(now) && bStartTime.isAfter(now)) {
-          return aStartTime.compareTo(bStartTime);
-        } else if (aStartTime.isAfter(now)) {
-          return -1;
-        } else if (bStartTime.isAfter(now)) {
-          return 1;
-        } else {
-          return aStartTime.compareTo(bStartTime);
-        }
-      });
+      // _exams.sort((a, b) {
+      //   DateTime now = DateTime.now();
+      //   DateTime aStartTime = DateTime.parse(a.time.split('~')[0].trim());
+      //   DateTime bStartTime = DateTime.parse(b.time.split('~')[0].trim());
+      //   if (aStartTime.isAfter(now) && bStartTime.isAfter(now)) {
+      //     return aStartTime.compareTo(bStartTime);
+      //   } else if (aStartTime.isAfter(now)) {
+      //     return -1;
+      //   } else if (bStartTime.isAfter(now)) {
+      //     return 1;
+      //   } else {
+      //     return aStartTime.compareTo(bStartTime);
+      //   }
+      // });
     } else {
       Toast.show(res.message);
     }
@@ -101,17 +101,17 @@ class _ExamPageState extends State<ExamPage> {
 class ExamCard extends StatelessWidget {
   final Exam exam;
 
-  const ExamCard({Key? key, required this.exam}) : super(key: key);
+  const ExamCard({super.key, required this.exam});
 
   @override
   Widget build(BuildContext context) {
     Color? nameColor;
-    DateTime startTime = DateTime.parse(exam.time.split('~')[0].trim());
-    if (startTime.isBefore(DateTime.now())) {
-      nameColor = context.theme.disabledColor;
-    } else {
-      nameColor = context.theme.colorScheme.primary;
-    }
+    // DateTime startTime = DateTime.parse(exam.time.split('~')[0].trim());
+    // if (startTime.isBefore(DateTime.now())) {
+    //   nameColor = context.theme.disabledColor;
+    // } else {
+    //   nameColor = context.theme.colorScheme.primary;
+    // }
 
     return Card(
       child: Container(

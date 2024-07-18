@@ -27,11 +27,12 @@ class CourseAPI {
   }
 
   final String _pluginName = '课程表';
+
   // final HttpRequest _http = HttpRequest();
   final String _service = 'http://bkzhjx.wh.sdu.edu.cn/sso.jsp';
   final String _courseCacheKey = 'courseCache';
   final String _customCourseKey = 'customCourseKey';
-  final String _coursesAPIPath = '${Server.edu}/course_schedule';
+  final String _coursesAPIPath = '${Server.baseUrl}/';
   JSAuthManager? authManager;
 
   Future<ResultEntity<List<Course>>> courses({bool useCache = true}) async {
@@ -52,25 +53,47 @@ class CourseAPI {
           (await CipherPairAPI().pluginCipherPair(pluginId: _pluginName)).data!;
       String path = await _pluginAuthPath();
       JSAuthManager manager = JSAuthManager(
-          username: pair.name,
-          password: pair.password,
-          scriptPath: path);
+          username: pair.name, password: pair.password, scriptPath: path);
       String? cookie = await manager.cookie(_service);
       if (cookie == null) {
         return ResultEntity.error(message: '获取Cookie出错');
       }
-      String base = await rootBundle.loadString('assets/js/base.js');
-      String code = await JSAPI().jsCode(_coursesAPIPath);
-      //指定调用函数方法名,并调用方法
-      String result = await JSAPI().runJs('$base\n$code', params: [cookie]);
-      Map<String, dynamic> data = jsonDecode(result);
-      if (data['code'] == 0) {
-        List list = data['data'];
+      ResultEntity<List> result =
+          await JSAPI().rpcRunJS(await _pluginFunctionPath(), params: [cookie]);
+      if (result.success) {
+        List list = result.data!;
         var res = list.map((jsonMap) => Course.fromJson(jsonMap)).toList();
-        CacheUtils.cacheText(_courseCacheKey, jsonEncode(res));
-        return ResultEntity.succeed(data: res);
+        List<Course> finalRes = [];
+        for (var c in res) {
+          if (c.courseOrders.isNotEmpty) {
+            for (int order in c.courseOrders) {
+              if (order > 9) {
+                order = 9;
+              }
+              finalRes.add(c.copyWith(courseOrder: ((order + 1) ~/ 2)));
+            }
+          } else {
+            finalRes.add(c);
+          }
+        }
+        CacheUtils.cacheText(_courseCacheKey, jsonEncode(finalRes));
+        return ResultEntity.succeed(data: finalRes);
+      } else {
+        return ResultEntity.error(message: result.message);
       }
-    } catch (e) {
+      // String base = await rootBundle.loadString('assets/js/base.js');
+      // String code = await JSAPI().jsCode(await _pluginFunctionPath());
+      // //指定调用函数方法名,并调用方法
+      // String result = await JSAPI().runJs('$base\n$code', params: [cookie]);
+      // Map<String, dynamic> data = jsonDecode(result);
+      // if (data['code'] == 0) {
+      //   List list = data['data'];
+      //   var res = list.map((jsonMap) => Course.fromJson(jsonMap)).toList();
+      //   CacheUtils.cacheText(_courseCacheKey, jsonEncode(res));
+      //   return ResultEntity.succeed(data: res);
+      // }
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack, label: e.toString());
       if (e is PasswordErrorException) {
         return ResultEntity.error(message: '获取失败,请检查统一身份认证账户是否正确');
       } else if (e is JSExecuteException) {
@@ -123,7 +146,20 @@ class CourseAPI {
       var plugin = (await PluginAPI.getByTitle('中国科学院大学')).data!;
       return plugin.url;
     }
-    var plugin = (await PluginAPI.getByTitle(res['plugin']!)).data!;
+    var plugin = (await PluginAPI.getByTitle(res[_pluginName]!)).data!;
+    return plugin.url;
+  }
+
+  Future<String> _pluginFunctionPath() async {
+    Map<String, String> res =
+        jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
+            .cast<String, String>();
+    if (res[_pluginName] == null || res[_pluginName]!.isEmpty) {
+      var plugin = (await PluginAPI.getByTitle('中国科学院大学-$_pluginName')).data!;
+      return plugin.url;
+    }
+    var plugin =
+        (await PluginAPI.getByTitle('${res[_pluginName]!}-$_pluginName')).data!;
     return plugin.url;
   }
 }

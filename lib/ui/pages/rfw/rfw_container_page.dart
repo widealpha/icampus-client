@@ -48,7 +48,7 @@ class _RfwContainerPageState extends State<RfwContainerPage> {
         title: Text(_title),
         actions: _buildAppbarActions(),
       ),
-      endDrawer: PluginLogPage(stream: _rfwLogic.logStream),
+      // endDrawer: PluginLogPage(stream: _rfwLogic.logStream),
       body: SafeArea(
         child: Builder(builder: (context) {
           if (_loading) {
@@ -81,12 +81,13 @@ class _RfwContainerPageState extends State<RfwContainerPage> {
             onPressed: () => _showInfoDialog(),
             icon: const Icon(Icons.info_outline_rounded)));
       }
-      actions.add(IconButton(
-          onPressed: () {
-            context.to((_) => PluginSettingPage(plugin: widget.plugin));
-          },
-          icon: const Icon(Icons.settings_rounded)));
+
     }
+    actions.add(IconButton(
+        onPressed: () {
+          context.to((_) => PluginSettingPage(plugin: widget.plugin));
+        },
+        icon: const Icon(Icons.settings_rounded)));
     if (kDebugMode) {
       actions.add(IconButton(
           onPressed: () {
@@ -95,7 +96,7 @@ class _RfwContainerPageState extends State<RfwContainerPage> {
           icon: const Icon(Icons.developer_mode)));
     }
 
-    return [];
+    return actions;
   }
 
   Future<void> _showInfoDialog() {

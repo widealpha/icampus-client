@@ -56,7 +56,7 @@ class ExamAPI {
         return ResultEntity.error(message: '获取Cookie出错');
       }
       ResultEntity<List> result =
-          await JSAPI().rpcRunJS(_examsAPIPath, params: [cookie]);
+          await JSAPI().rpcRunJS(await _pluginFunctionPath(), params: [cookie]);
       if (result.success) {
         List list = result.data!;
         var res = list.map((jsonMap) => Exam.fromJson(jsonMap)).toList();
@@ -89,6 +89,19 @@ class ExamAPI {
       return plugin.url;
     }
     var plugin = (await PluginAPI.getByTitle(res[_pluginName]!)).data!;
+    return plugin.url;
+  }
+
+  Future<String> _pluginFunctionPath() async {
+    Map<String, String> res =
+    jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
+        .cast<String, String>();
+    if (res[_pluginName] == null || res[_pluginName]!.isEmpty) {
+      var plugin = (await PluginAPI.getByTitle('中国科学院大学-$_pluginName')).data!;
+      return plugin.url;
+    }
+    var plugin =
+    (await PluginAPI.getByTitle('${res[_pluginName]!}-$_pluginName')).data!;
     return plugin.url;
   }
 }

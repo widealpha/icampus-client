@@ -128,13 +128,15 @@ class _TimeTablePageState extends State<TimeTablePage> {
               onTap: () {
                 _chooseWeek(context);
               },
-              child: ValueListenableProvider.value(
-                value: _selectedWeek,
-                child: Text(
-                  '第${_selectedWeek.value + 1}周',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+              child: ListenableBuilder(
+                listenable: _selectedWeek,
+                builder: (BuildContext context, Widget? child) {
+                  return Text(
+                    '第${_selectedWeek.value + 1}周',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18),
+                  );
+                },
               )),
           actions: [
             TextButton.icon(

@@ -29,7 +29,7 @@ class Plugin extends Equatable {
     return {
       'title': name,
       'description': description,
-      'url': url,
+      'content': url,
       'creator': creator,
       'update_at': updateTime.toString(),
       'create_at': createTime.toString(),

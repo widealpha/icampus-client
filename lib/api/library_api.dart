@@ -27,7 +27,6 @@ class LibraryAPI {
   final String _pluginName = '图书馆';
 
   final String _service = 'http://bkzhjx.wh.sdu.edu.cn/sso.jsp';
-  final String _examsAPIPath = '${Server.edu}/exam';
 
   Future<ResultEntity<List<Book>>> searchBooks(String searchKey) async {
     try {
@@ -40,8 +39,8 @@ class LibraryAPI {
       if (cookie == null) {
         return ResultEntity.error(message: '获取Cookie出错');
       }
-      ResultEntity<List> result =
-          await JSAPI().rpcRunJS(_examsAPIPath, params: [cookie, searchKey]);
+      ResultEntity<List> result = await JSAPI()
+          .rpcRunJS(await _pluginFunctionPath(), params: [cookie, searchKey]);
       if (result.success) {
         List list = result.data!;
         var res = list.map((jsonMap) => Book.fromJson(jsonMap)).toList();
@@ -65,13 +64,26 @@ class LibraryAPI {
 
   Future<String> _pluginAuthPath() async {
     Map<String, String> res =
-    jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
-        .cast<String, String>();
+        jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
+            .cast<String, String>();
     if (res[_pluginName] == null || res[_pluginName]!.isEmpty) {
       var plugin = (await PluginAPI.getByTitle('中国科学院大学')).data!;
       return plugin.url;
     }
     var plugin = (await PluginAPI.getByTitle(res[_pluginName]!)).data!;
+    return plugin.url;
+  }
+
+  Future<String> _pluginFunctionPath() async {
+    Map<String, String> res =
+        jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
+            .cast<String, String>();
+    if (res[_pluginName] == null || res[_pluginName]!.isEmpty) {
+      var plugin = (await PluginAPI.getByTitle('中国科学院大学-$_pluginName')).data!;
+      return plugin.url;
+    }
+    var plugin =
+        (await PluginAPI.getByTitle('${res[_pluginName]!}-$_pluginName')).data!;
     return plugin.url;
   }
 }

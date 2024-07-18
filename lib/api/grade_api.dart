@@ -14,7 +14,6 @@ import 'cipher_pair_api.dart';
 import 'http_request.dart';
 import 'js_api.dart';
 
-
 class GradeAPI {
   static GradeAPI? instance;
 
@@ -31,21 +30,18 @@ class GradeAPI {
   final String _pluginName = '成绩查询';
 
   Future<ResultEntity<List<Grade>>> grades(String semester) async {
-
     try {
       CipherPair pair =
-      (await CipherPairAPI().pluginCipherPair(pluginId: _pluginName)).data!;
-      String path = await _pluginAuthPath();
+          (await CipherPairAPI().pluginCipherPair(pluginId: _pluginName)).data!;
+      String authPath = await _pluginAuthPath();
       JSAuthManager manager = JSAuthManager(
-          username: pair.name,
-          password: pair.password,
-          scriptPath: path);
+          username: pair.name, password: pair.password, scriptPath: authPath);
       String? cookie = await manager.cookie(_service);
       if (cookie == null) {
         return ResultEntity.error(message: '获取Cookie出错');
       }
       ResultEntity<List> result =
-          await JSAPI().rpcRunJS(_coursesAPIPath, params: [cookie, semester]);
+          await JSAPI().rpcRunJS(await _pluginFunctionPath(), params: [cookie, semester]);
       if (result.success) {
         return ResultEntity.succeed(
             data: result.data!
@@ -54,7 +50,8 @@ class GradeAPI {
       } else {
         return ResultEntity.error(message: result.message);
       }
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack, label: e.toString());
       if (e is PasswordErrorException) {
         return ResultEntity.error(message: '获取失败,请检查统一身份认证账户是否正确');
       } else if (e is JSExecuteException) {
@@ -70,13 +67,26 @@ class GradeAPI {
 
   Future<String> _pluginAuthPath() async {
     Map<String, String> res =
-    jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
-        .cast<String, String>();
+        jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
+            .cast<String, String>();
     if (res[_pluginName] == null || res[_pluginName]!.isEmpty) {
       var plugin = (await PluginAPI.getByTitle('中国科学院大学')).data!;
       return plugin.url;
     }
     var plugin = (await PluginAPI.getByTitle(res[_pluginName]!)).data!;
+    return plugin.url;
+  }
+
+  Future<String> _pluginFunctionPath() async {
+    Map<String, String> res =
+        jsonDecode(Store.get('pluginBindAuth', defaultValue: '{}')!)
+            .cast<String, String>();
+    if (res[_pluginName] == null || res[_pluginName]!.isEmpty) {
+      var plugin = (await PluginAPI.getByTitle('中国科学院大学-$_pluginName')).data!;
+      return plugin.url;
+    }
+    var plugin =
+        (await PluginAPI.getByTitle('${res[_pluginName]!}-$_pluginName')).data!;
     return plugin.url;
   }
 }

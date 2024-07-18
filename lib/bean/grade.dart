@@ -49,19 +49,19 @@ class Grade {
 
   factory Grade.fromJson(Map<String, dynamic> map) {
     return Grade(
-      courseId: map['courseId'] as String,
-      courseParam: map['courseParam'] as String,
-      courseName: map['courseName'] as String,
-      dailyScore: map['dailyScore'] as String,
-      examScore: map['examScore'] as String,
-      totalScore: map['totalScore'] as String,
-      level: map['level'] as String,
-      credit: map['credit'] as String,
-      gpa: map['gpa'] as String,
+      courseId: map['courseId'] ?? '',
+      courseParam: map['courseParam'] ?? '',
+      courseName: map['courseName'] ?? '',
+      dailyScore: map['dailyScore'] ?? '',
+      examScore: map['examScore'] ?? '',
+      totalScore: map['totalScore'] ?? '',
+      level: map['level'] ?? '',
+      credit: map['credit'] ?? '',
+      gpa: map['gpa'] ?? '',
       highestScore: map['highestScore'] ?? '',
       lowestScore: map['lowestScore'] ?? '',
-      type: map['type'] as String,
-      semester: map['semester'] as String,
+      type: map['type'] ?? '',
+      semester: map['semester'] ?? '',
     );
   }
 }

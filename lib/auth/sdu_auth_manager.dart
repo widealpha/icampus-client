@@ -155,6 +155,7 @@ class SduAuthManager extends AuthManager {
       if (_tgt != null) {
         return true;
       }
+
       String? username = await SecureStore.read(usernameKey);
       String? password = await SecureStore.read(passwordKey);
       if (debug) {
